@@ -54,7 +54,7 @@ func run() error {
 
 	var wg sync.WaitGroup
 
-	err := godotenv.Load("../.env")
+	err := godotenv.Load(".env")
 	if err != nil {
 		return fmt.Errorf(".env file load: %w", err)
 	}
