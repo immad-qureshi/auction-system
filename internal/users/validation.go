@@ -63,15 +63,28 @@ func ValidateRegistration(req RegisterRequest) error {
 
 func ValidateLogin(req LoginRequest) error {
 	if req.Email == "" {
-		return ErrInvalidEmail
+		return ErrInvalidEmailOrPassword
 	}
 
-	if req.Password == "" {
-		return ErrInvalidPassword
+	if utf8.RuneCountInString(req.Email) > 255 {
+		return ErrInvalidEmailOrPassword
+	}
+
+	addr, err := mail.ParseAddress(req.Email)
+	if err != nil || addr.Address != req.Email {
+		return ErrInvalidEmailOrPassword
+	}
+
+	if strings.TrimSpace(req.Password) == "" {
+		return ErrInvalidEmailOrPassword
+	}
+
+	if utf8.RuneCountInString(req.Password) < 8 {
+		return ErrInvalidEmailOrPassword
 	}
 
 	if len(req.Password) > 72 {
-		return ErrInvalidPassword
+		return ErrInvalidEmailOrPassword
 	}
 
 	return nil

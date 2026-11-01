@@ -108,6 +108,14 @@ func (api *UsersAPI) Login(w http.ResponseWriter, r *http.Request) {
 
 	req.Email = NormalizeEmail(req.Email)
 
+	err := ValidateLogin(req)
+	if err != nil {
+		response.JSON(w, http.StatusUnauthorized, response.Body{
+			Message: err.Error(),
+		})
+		return
+	}
+
 	user, err := api.Store.Login(r.Context(), req)
 	if err != nil {
 		api.handleErrors(w, err)
